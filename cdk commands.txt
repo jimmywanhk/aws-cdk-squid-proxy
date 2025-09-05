@@ -1,0 +1,9 @@
+# Deploy to dev environment (default)
+cdk deploy --all
+
+# Deploy to specific environment
+cdk deploy --all --context environment=prod
+
+# Deploy individual stacks
+cdk deploy NetworkStack --context environment=dev
+cdk deploy SquidProxyStack --context environment=dev
