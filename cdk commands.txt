@@ -1,3 +1,6 @@
+# Run this command to setup CDKToolkit for the first time
+cdk bootstrap
+
 # Deploy to dev environment (default)
 cdk deploy --all
 

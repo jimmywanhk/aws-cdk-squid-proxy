@@ -36,6 +36,6 @@ const squidProxyStack = new SquidProxyStack(app, 'SquidProxyStack', {
   project: appConfig.project,
   vpc: networkStack.vpc,
   securityGroup: networkStack.securityGroup,
+  targetGroup: networkStack.targetGroup,
   keyPairName: config.keyPairName,
 });
-
