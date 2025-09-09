@@ -36,8 +36,8 @@ export interface AppConfig {
         },
       },
       prod: {
-        account: '328909449322',
-        region: 'us-east-1',
+        //account: '328909449322',
+        //region: 'us-east-1',
         keyPairName: 'prod-squid-keypair',
         vpc: {
           cidr: '10.1.0.0/16',
