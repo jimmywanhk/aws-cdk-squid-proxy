@@ -1,3 +1,16 @@
+# with-ec2-only -> We've got a static EIP
+Build the squid Docker image from ./docker directory, push it to ECR.
+Deploy an ECS (EC2 mode) with ASG for EC2 self healing.
+Deploy an EIP and attach to the EC2.
+Deploy a Lambda function triggered by the EventBridge (TaskStateChangeRule) that if
+the EC2 instance is replaced due to unhealthy status, the Lambda function will be executed
+to attach the same EIP to the new EC2 instance created by the ASG.
+
+# with-nlb-for-static-dns-name -> We've got a static DNS name from the NLB
+Build the squid Docker image from ./docker directory, push it to ECR.
+Deploy an ECS (EC2 mode) with ASG for EC2 self healing.
+Attach a NLB to the ASG for the static DNS name (higher monthly cost)
+
 # Welcome to your CDK TypeScript project
 
 This is a blank project for CDK development with TypeScript.
