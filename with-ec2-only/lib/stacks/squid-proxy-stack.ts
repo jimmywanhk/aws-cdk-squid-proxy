@@ -47,7 +47,7 @@ export class SquidProxyStack extends BaseStack {
 
     // ECR Repository
     this.ecrRepository = new ecr.Repository(this, 'ECRRepository', {
-      repositoryName: 'squid-proxy',
+      repositoryName: this.createResourceName('squid-proxy'),
       imageScanOnPush: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
@@ -58,6 +58,7 @@ export class SquidProxyStack extends BaseStack {
       securityGroup: props.securityGroup,
       instanceRole: this.ecsInstanceRole,
       keyName: props.keyPairName,
+      createResourceName: this.createResourceName.bind(this),
     });
     this.cluster = squidCluster.cluster;
 
@@ -75,13 +76,14 @@ export class SquidProxyStack extends BaseStack {
     // Task Definition
     const squidTaskDef = new SquidTaskDefinition(this, 'TaskDefinition', {
       executionRole: this.ecsTaskExecutionRole,
+      createResourceName: this.createResourceName.bind(this),
     });
 
     // ECS Service
     this.service = new ecs.Ec2Service(this, 'Service', {
       cluster: this.cluster,
       taskDefinition: squidTaskDef.taskDefinition,
-      serviceName: 'squid-proxy-service',
+      serviceName: this.createResourceName('squid-proxy-service'),
       desiredCount: 1,
       /*circuitBreaker: {
         rollback: true,
@@ -97,8 +99,9 @@ export class SquidProxyStack extends BaseStack {
     // EIP Manager Lambda
     this.eipManager = new EipManager(this, 'EipManager', {
       cluster: this.cluster,
-      serviceName: 'squid-proxy-service',
+      serviceName: this.createResourceName('squid-proxy-service'),
       eipAllocationId: this.elasticIp.attrAllocationId,
+      createResourceName: this.createResourceName.bind(this),
     });
 
     // Add dependency to ensure EIP is created before Lambda

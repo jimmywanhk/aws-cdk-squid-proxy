@@ -20,7 +20,7 @@ export interface AppConfig {
   }
   
   export const appConfig: AppConfig = {
-    project: 'squid-proxy',
+    project: 'squid-proxy-ec2',
     environments: {
       dev: {
         keyPairName: 'dev-squid-keypair',

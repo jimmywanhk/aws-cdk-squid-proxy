@@ -10,6 +10,7 @@ export interface SquidTaskDefinitionProps {
   memoryLimitMiB?: number;
   memoryReservationMiB?: number;
   dockerDirectory?: string;
+  createResourceName: (name: string) => string;
 }
 
 export class SquidTaskDefinition extends Construct {
@@ -21,7 +22,7 @@ export class SquidTaskDefinition extends Construct {
 
     // CloudWatch Log Group
     this.logGroup = new logs.LogGroup(this, 'LogGroup', {
-      logGroupName: '/ecs/squid-proxy',
+      logGroupName: props.createResourceName('/ecs/squid-proxy'),
       retention: logs.RetentionDays.ONE_WEEK,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });

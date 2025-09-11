@@ -14,6 +14,7 @@ export interface SquidClusterProps {
   minCapacity?: number;
   maxCapacity?: number;
   desiredCapacity?: number;
+  createResourceName: (name: string) => string;
 }
 
 export class SquidCluster extends Construct {
@@ -26,7 +27,7 @@ export class SquidCluster extends Construct {
     // ECS Cluster
     this.cluster = new ecs.Cluster(this, 'Cluster', {
       vpc: props.vpc,
-      clusterName: 'squid-proxy-cluster',
+      clusterName: props.createResourceName('squid-proxy-cluster'),
     });
 
     // Auto Scaling Group
@@ -55,7 +56,7 @@ export class SquidCluster extends Construct {
     // Capacity Provider
     const capacityProvider = new ecs.AsgCapacityProvider(this, 'CapacityProvider', {
       autoScalingGroup: this.autoScalingGroup,
-      capacityProviderName: 'squid-capacity-provider',
+      capacityProviderName: props.createResourceName('squid-capacity-provider'),
     });
 
     this.cluster.addAsgCapacityProvider(capacityProvider);

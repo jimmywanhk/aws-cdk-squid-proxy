@@ -13,6 +13,7 @@ export interface EipManagerProps {
   cluster: ecs.ICluster;
   serviceName: string;
   eipAllocationId: string;
+  createResourceName: (name: string) => string;
 }
 
 export class EipManager extends Construct {

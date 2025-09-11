@@ -1,5 +1,5 @@
 {
-  "name": "cdk-ecs-squid-proxy",
+  "name": "cdk-ecs-squid-proxy-nlb",
   "version": "0.1.0",
   "bin": {
     "cdk-ecs-squid-proxy": "bin/cdk-ecs-squid-proxy.js"

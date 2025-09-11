@@ -48,7 +48,7 @@ export class NetworkStack extends BaseStack {
     this.networkLoadBalancer = new elbv2.NetworkLoadBalancer(this, 'SquidNLB', {
       vpc: this.vpc,
       internetFacing: true,
-      loadBalancerName: 'squid-nlb', //this.createResourceName('squid-nlb'), name too long
+      loadBalancerName: this.createResourceName('squid-nlb'),
       vpcSubnets: {
         subnetType: ec2.SubnetType.PUBLIC,
       },
@@ -59,7 +59,7 @@ export class NetworkStack extends BaseStack {
       port: 3128,
       protocol: elbv2.Protocol.TCP,
       vpc: this.vpc,
-      targetGroupName: 'squid-tg', //this.createResourceName('squid-tg'), name too long
+      targetGroupName: this.createResourceName('squid-tg'),
       healthCheck: {
         enabled: true,
         protocol: elbv2.Protocol.TCP,
