@@ -10,7 +10,7 @@ import { EcsConstruct } from '../constructs/ecs-construct';
 import { EcrConstruct } from '../constructs/ecr-construct';
 import { LogGroupConstruct } from '../constructs/log-group-construct';
 
-export interface ECSSquidStackProps extends BaseStackProps {
+export interface EcsSquidStackProps extends BaseStackProps {
   vpc: ec2.IVpc;
   securityGroup: ec2.ISecurityGroup;
   targetGroup: elbv2.INetworkTargetGroup;
@@ -24,8 +24,8 @@ export interface ECSSquidStackProps extends BaseStackProps {
   desiredCapacity: number;
 }
 
-export class ECSSquidStack extends BaseStack {
-  constructor(scope: Construct, id: string, props: ECSSquidStackProps) {
+export class EcsSquidStack extends BaseStack {
+  constructor(scope: Construct, id: string, props: EcsSquidStackProps) {
     super(scope, id, props);
 
     // Create security resources first

@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { NetworkStack } from '../lib/stacks/network-stack';
-import { ECSSquidStack } from '../lib/stacks/ecs-squid-stack';
+import { EcsSquidStack } from '../lib/stacks/ecs-squid-stack';
 import { appConfig } from '../config/app-config';
 
 const app = new cdk.App();
@@ -30,7 +30,7 @@ const networkStack = new NetworkStack(app, 'NetworkStack', {
 });
 
 // Combined Squid Proxy Stack (includes security resources)
-const squidProxyStack = new ECSSquidStack(app, 'SquidProxyStack', {
+const squidProxyStack = new EcsSquidStack(app, 'SquidProxyStack', {
   env,
   environment,
   project: appConfig.project,
