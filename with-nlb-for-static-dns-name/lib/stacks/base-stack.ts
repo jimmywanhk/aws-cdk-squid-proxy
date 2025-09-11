@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { BaseStackProps } from '../interfaces/stack-props';
+import { BaseStackProps } from '../interfaces/base-stack-props';
 
 export abstract class BaseStack extends cdk.Stack {
   protected readonly envName: string;

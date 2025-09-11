@@ -3,83 +3,41 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { Construct } from 'constructs';
 import { BaseStack } from './base-stack';
-import { NetworkStackProps } from '../interfaces/stack-props';
+import { BaseStackProps } from '../interfaces/base-stack-props';
+import { VpcConstruct } from '../constructs/vpc-construct';
+
+export interface NetworkStackProps extends BaseStackProps {
+  vpcCidr: string;
+  maxAzs: number;
+}
 
 export class NetworkStack extends BaseStack {
   public readonly vpc: ec2.Vpc;
   public readonly securityGroup: ec2.SecurityGroup;
-  public readonly networkLoadBalancer: elbv2.NetworkLoadBalancer;
   public readonly targetGroup: elbv2.NetworkTargetGroup;
 
   constructor(scope: Construct, id: string, props: NetworkStackProps) {
     super(scope, id, props);
 
     // Disable default security group restrictions for this context
+    // If set to true then the default inbound & outbound rules will be removed from the default security group.
     this.node.setContext('@aws-cdk/aws-ec2:restrictDefaultSecurityGroup', false);
 
-    this.vpc = new ec2.Vpc(this, 'Vpc', {
+    const vpcConstruct = new VpcConstruct(this, 'VPC', {
       vpcName: this.createResourceName('vpc'),
-      cidr: props.vpcCidr || '10.0.0.0/16',
-      maxAzs: props.maxAzs || 2,
-      subnetConfiguration: [
-        {
-          cidrMask: 24,
-          name: 'public',
-          subnetType: ec2.SubnetType.PUBLIC,
-        },
-      ],
-    });
-
-    // Security Group for Squid Proxy
-    this.securityGroup = new ec2.SecurityGroup(this, 'SquidSecurityGroup', {
-      vpc: this.vpc,
+      vpcCidr: props.vpcCidr,
+      maxAzs: props.maxAzs,
       securityGroupName: this.createResourceName('squid-sg'),
-      description: 'Security group for Squid proxy',
-      allowAllOutbound: true,
-    });
-
-    this.securityGroup.addIngressRule(
-      ec2.Peer.anyIpv4(),
-      ec2.Port.tcp(3128),
-      'Allow Squid proxy access from anywhere'
-    );
-
-    // Create Network Load Balancer
-    this.networkLoadBalancer = new elbv2.NetworkLoadBalancer(this, 'SquidNLB', {
-      vpc: this.vpc,
-      internetFacing: true,
       loadBalancerName: this.createResourceName('squid-nlb'),
-      vpcSubnets: {
-        subnetType: ec2.SubnetType.PUBLIC,
-      },
-    });
-
-    // Create Target Group for Squid Proxy
-    this.targetGroup = new elbv2.NetworkTargetGroup(this, 'SquidTargetGroup', {
-      port: 3128,
-      protocol: elbv2.Protocol.TCP,
-      vpc: this.vpc,
       targetGroupName: this.createResourceName('squid-tg'),
-      healthCheck: {
-        enabled: true,
-        protocol: elbv2.Protocol.TCP,
-        port: '3128',
-        healthyThresholdCount: 2,
-        unhealthyThresholdCount: 2,
-        interval: cdk.Duration.seconds(30),
-      },
     });
-
-    // Create Listener
-    this.networkLoadBalancer.addListener('SquidListener', {
-      port: 3128,
-      protocol: elbv2.Protocol.TCP,
-      defaultTargetGroups: [this.targetGroup],
-    });
-
+    this.vpc = vpcConstruct.vpc;
+    this.securityGroup = vpcConstruct.securityGroup;
+    this.targetGroup = vpcConstruct.targetGroup;
+    
     // Output the NLB DNS name
     new cdk.CfnOutput(this, 'SquidProxyEndpoint', {
-      value: this.networkLoadBalancer.loadBalancerDnsName,
+      value: vpcConstruct.networkLoadBalancer.loadBalancerDnsName,
       description: 'Network Load Balancer DNS name for Squid proxy',
       exportName: `${this.stackName}-NLB-DNS`,
     });
