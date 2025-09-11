@@ -73,7 +73,7 @@ export class EcsConstruct extends Construct {
     // Container
     const container = props.taskDefinition.addContainer('squid-proxy', {
       image: ecs.ContainerImage.fromDockerImageAsset(props.dockerImage),
-      memoryLimitMiB: props.memoryLimitMiB,
+      //memoryLimitMiB: props.memoryLimitMiB,
       cpu: props.cpu,
       memoryReservationMiB: props.memoryReservationMiB,
       logging: ecs.LogDrivers.awsLogs({
