@@ -13,7 +13,7 @@ export interface EipManagerProps {
   cluster: ecs.ICluster;
   serviceName: string;
   eipAllocationId: string;
-  createResourceName: (name: string) => string;
+  lambdaExecutionRole: iam.IRole;
 }
 
 export class EipManager extends Construct {
@@ -23,37 +23,11 @@ export class EipManager extends Construct {
   constructor(scope: Construct, id: string, props: EipManagerProps) {
     super(scope, id);
 
-    // Lambda execution role
-    const lambdaRole = new iam.Role(this, 'LambdaRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-      ],
-      inlinePolicies: {
-        EipManagement: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              effect: iam.Effect.ALLOW,
-              actions: [
-                'ec2:DescribeInstances',
-                'ec2:DescribeAddresses',
-                'ec2:AssociateAddress',
-                'ec2:DisassociateAddress',
-                'ecs:DescribeTasks',
-                'ecs:DescribeContainerInstances',
-              ],
-              resources: ['*'],
-            }),
-          ],
-        }),
-      },
-    });
-
     // Lambda function
     this.lambdaFunction = new lambda.Function(this, 'Function', {
       runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.handler',
-      role: lambdaRole,
+      role: props.lambdaExecutionRole,
       timeout: cdk.Duration.minutes(5),
       environment: {
         CLUSTER_NAME: props.cluster.clusterName,
